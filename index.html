@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fetch Response Status</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body class="min-100-vh flex-column">
+    <header class="p-5 text-center text-white bg-primary">
+        <h1>Feed.me</h1>
+    </header>
+    <main>
+        <p id="response-text"> </p>
+
+        <div class="demo">
+
+
+            <form action="#">
+
+                <label for="radius">Select Search Settings</label>
+                <select multiple name="radius" id="test-menu" class="selectVal">
+                    <option disabled selected value> -- select an option -- </option>
+                    <option id="q" value="0">Ingredients</option>
+                    <option id="ingr" value="1">Number of Ingredients</option>
+                    <option id="diet" value="3">Diet Label</option>
+                    <option id="health" value="3">Health Label</option>
+                    <option id="cuisineType" value="2">Cuisine Type</option>
+                    <option id="mealType" value="2">Meal Type</option>
+                    <option id="dishType" value="2">Dish Type</option>
+                    <option id="calories" value="1">Calorie Limit</option>
+                    <option id="time" value="1">Time Limit</option>
+                    <option id="excluded" value="0">Excluded Ingredients</option>
+                </select>
+
+
+            </form>
+
+            <form id="settings-box">
+                <div id="settings"></div>
+                <div id="settings-display"></div>
+                <label>Limit Results:</label>
+                <input type = "number" id = "result-lim">
+                <button id="search-button" type="submit">search</button>
+            </form>
+        </div>
+
+
+        <div class="controlgroup"></div>
+
+    </main>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>
