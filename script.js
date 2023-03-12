@@ -294,6 +294,7 @@ $(function () {
   async function main() {
     const apiObject = await storedApi("storedAPI", callApi);
 
+    $('.controlgroup').empty()
     console.log("wrapper void function test:")
     console.log(apiObject)
 
@@ -301,6 +302,7 @@ $(function () {
     var recipeArray = apiObject.hits
   
     let resultLimit = Math.min($('#result-lim').val() , recipeArray.length)
+    console.log(resultLimit)
     for (let i = 0; i < resultLimit; i++) {
       // creates an h2 element that text content is the same as 'label' inside the api!
       let recipesnames = $('<h2>').text(recipeArray[i].recipe.label);
