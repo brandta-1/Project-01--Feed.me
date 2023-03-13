@@ -6,6 +6,12 @@ let apiURL = "";
 
 $(function () {
 
+  $(document).on('keydown', function (e) {
+    if (e.keyCode == 13) {
+      return false;
+    }
+  });
+
 
   let searchTypes = ["input", "input", "select", "select"];
   let activeSettings = [];
@@ -156,9 +162,9 @@ $(function () {
 
     //last minute repair, this whole section can be optimized
     if (Number(currEl.val()) === 1) {
-      $(".search-option").last().attr({type: "number"});
+      $(".search-option").last().attr({ type: "number" });
 
-    } 
+    }
     //if the input type is a dropdown selector
     else if (Number(currEl.val()) > 1) {
 
@@ -230,6 +236,7 @@ $(function () {
     //filter null values
     let queryParamsF = Object.fromEntries(Object.entries(queryParams).filter(([_, i]) => i != null && i != [] && i != ""));
     console.log(queryParamsF);
+    console.log(queryParamsF.length);
     //create URLSearchParams, make it a string for string methods
     test = new URLSearchParams(queryParamsF).toString();
 
@@ -248,51 +255,7 @@ $(function () {
     console.log("Draw Results Test:")
     console.log(apiURL);
 
-    main();
-
-
-
-
-  }
-
-
-
-
-
-  async function processURL(url) {
-    let response = await fetch(url);
-    let data = await response.json();
-    return data;
-  }
-
-
-
-
-  async function storedApi(key, callback) {
-
-    if (localStorage.getItem(key) === null) {
-
-      const data = await callback();
-      localStorage.setItem(key, JSON.stringify(data));
-    }
-
-    return JSON.parse(localStorage.getItem(key))
-  }
-
-
-  function callApi() {
-    return fetch(apiURL)
-      .then(request => request.json())
-  }
-
-  function callApi2() {
-    return fetch("")
-      .then(request => request.json())
-  }
-
-
-  async function main() {
-    const apiObject = await storedApi("storedAPI", callApi);
+    let apiObject = await processURL(apiURL);
 
     $('.controlgroup').empty()
     console.log("wrapper void function test:")
@@ -300,8 +263,17 @@ $(function () {
 
 
     var recipeArray = apiObject.hits
-  
-    let resultLimit = Math.min($('#result-lim').val() , recipeArray.length)
+    console.log(recipeArray);
+    console.log(recipeArray.length);
+    if (recipeArray.length === 0) {
+      $('.controlgroup').append(
+        $('<h2>').text("No recipes found, try again")
+      )
+    }
+
+    $('#result-lim').val() > 0 ? resultLimit = $('#result-lim').val() : resultLimit = recipeArray.length
+
+
     console.log(resultLimit)
     for (let i = 0; i < resultLimit; i++) {
       // creates an h2 element that text content is the same as 'label' inside the api!
@@ -334,7 +306,7 @@ $(function () {
       // add attribute href to the link element which contrains the same as recipe url inside the api!
       instrutionslink.attr('href', recipeArray[i].recipe.url);
       // add instrutionslink text content!
-      instrutionslink.text('instrutions Link!');
+      instrutionslink.text('Instructions');
       // make instrutionsbutton append child 'instrutionslink'
       $(instrutionsbutton).append(instrutionslink)
       // make a button element
@@ -361,6 +333,7 @@ $(function () {
       // push recipes url content inside the localstorage
 
       let thisIndex = event.target.id.slice(-1);
+      $("#" + event.target.id).text("recipe saved!")
       pushes.push(recipeArray[thisIndex].recipe.url);
       // creates a localstorage 'savelink' and sets it as a string!
       localStorage.setItem('savedlink', JSON.stringify(pushes));
@@ -369,25 +342,13 @@ $(function () {
 
 
 
-
-
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  async function processURL(url) {
+    let response = await fetch(url);
+    let data = await response.json();
+    return data;
+  }
 
 
 });
