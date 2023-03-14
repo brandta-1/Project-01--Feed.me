@@ -1,13 +1,10 @@
-// const app_key = '7bbbe81cbe8b6c0236aed02fad02e1dc';
-// const app_id = 'ebc0f8c5';
-
-// this worked https://api.edamam.com/api/recipes/v2?type=public&q=chicken%2C%20rice%2C%20garlic&app_id=ebc0f8c5&app_key=7bbbe81cbe8b6c0236aed02fad02e1dc 
 let apiURL = "";
 
 $(function () {
 
   var r = document.querySelector(':root');
 
+  //disable enter key, otherwise forms can be broken
   $(document).on('keydown', function (e) {
     if (e.keyCode == 13) {
       return false;
@@ -18,6 +15,7 @@ $(function () {
   let searchTypes = ["input", "input", "select", "select"];
   let activeSettings = [];
 
+  //these values will eventually be used to call the edemam API
   let queryParams = {
     q: null,
     ingr: null,
@@ -33,6 +31,7 @@ $(function () {
     app_id: 'ebc0f8c5'
   }
 
+  //these are the lists for dropdown choices
   let dDsettings = {
     diet: [
       "balanced",
@@ -172,18 +171,13 @@ $(function () {
       const currSel = $("select").last();
 
       //append options to the dropdown, the options are derived from dDsettings "drop down settings"
-      /*
-      currSel.append(
-        $("<option>")
-      );
-      */
       dDsettings[currEl.attr("id")].forEach((_, i) => {
         currSel.append(
           $("<option>").attr("id", dDsettings[currEl.attr("id")][i]).text(dDsettings[currEl.attr("id")][i]),
         );
       })
 
-      //set certain dropdowns to multiple
+      //set certain dropdowns to multiple. Again, this can be optimized
       if (Number(currEl.val()) === 3) {
         currSel.prop("multiple", "multiple");
       }
@@ -231,39 +225,39 @@ $(function () {
     $(".search-option").toArray().forEach((_, i) => {
       let currSearchOption = $(".search-option").toArray()[i];
 
+      //if the current search option was not a drop down selector
       if (currSearchOption.tagName === "INPUT") {
+        //then just store its value into the query parameters
         queryParams[currSearchOption.id] = currSearchOption.value;
       } else {
-        console.log(currSearchOption.tagName);
+
+        //otherwise, create an array from the selected children and store the selected options' values
         queryParams[currSearchOption.id] = Array.from(currSearchOption.children).filter((option) => option.selected).map(option => option.value);
       }
     })
 
     //filter null values
-
     let queryParamsF = Object.fromEntries(Object.entries(queryParams).filter(([_, i]) => i != null && i != [] && i != ""));
 
-    //create URLSearchParams, make it a string for string methods
 
 
+    //create an array from the query parameters, then creates the resulting string
     const test = Object.keys(queryParamsF).reduce((acc, currKey) => {
+
       currVal = queryParamsF[currKey];
 
       let qParam = `${currKey}=${currVal}`;
       if (Array.isArray(currVal)) {
         //if it is an array, reduce it to another array of just the value and the query param of strings
-        //take that array of strings, and join them with an ampersand (see api docs)
+        //take that array of strings, and join them with an ampersand (see api docs, see api docs for "exclude" specifically)
         qParam = currVal.reduce((a, c) => [...a, `${currKey}=${c}`], []).join('&');
       } else if (currKey === "excluded") {
-          qParam = currVal.split(",").reduce((a, c) => [...a, `${currKey}=${c.trim()}`], []).join('&');
-          console.log(qParam);
-        }
+        qParam = currVal.split(",").reduce((a, c) => [...a, `${currKey}=${c.trim()}`], []).join('&');
+      }
 
       //return the current accumulated array with a new value added onto it (can be optimized by using map instead)
       return [...acc, qParam];
     }, []).join('&');
-
-    console.log(queryParamsF);
 
     apiURL = "https://api.edamam.com/api/recipes/v2?type=public&" + test;
 
@@ -272,22 +266,16 @@ $(function () {
   }
 
 
-  //Leo can start here, just copy paste whatever you had into here:
-  //write api output to json file
+
+
   async function DrawResults(apiURL) {
-    console.log("Draw Results Test:")
-    console.log(apiURL);
 
     let apiObject = await processURL(apiURL);
 
     $('.controlgroup').empty()
-    console.log("wrapper void function test:")
-    console.log(apiObject)
-
 
     var recipeArray = apiObject.hits
-    console.log(recipeArray);
-    console.log(recipeArray.length);
+
     if (recipeArray.length === 0) {
       $('.controlgroup').append(
         $('<h2>').text("No recipes found, try again")
@@ -296,9 +284,7 @@ $(function () {
 
     $('#result-lim').val() > 0 ? resultLimit = $('#result-lim').val() : resultLimit = recipeArray.length
 
-
-    console.log(resultLimit)
-    for (let i = 0; i < resultLimit-1; i++) {
+    for (let i = 0; i < resultLimit - 1; i++) {
       // creates an h2 element that text content is the same as 'label' inside the api!
       let recipesnames = $('<h2>').text(recipeArray[i].recipe.label);
       // make controlgroup append child 'recipenames'
@@ -373,6 +359,7 @@ $(function () {
 
   async function drawPage() {
 
+    //retrieve 4 seasonal holidays from the holiday API
     let apiObject = await processURL("https://holidayapi.com/v1/holidays?pretty&key=ea79cfef-e556-4497-90ca-54de8fcc2e17&country=US&year=2022");
 
     let holidays = [
@@ -384,16 +371,14 @@ $(function () {
 
     let distances = [];
 
-    console.log(holidays);
     let today = dayjs(dayjs().format('MM-DD'));
 
+    //find how far away each holiday is from today
     holidays.forEach((_, i) => {
       distances[i] = Math.abs(today.diff(holidays[i], 'day'))
     })
 
-
-    console.log(distances)
-
+    //holiday color themes 
     let colorSets = [
       ["#0F7E0B",
         "#f9f9f9",
@@ -420,44 +405,30 @@ $(function () {
         "#3BA94D",
         "#EBDE72"]
     ]
-/*
-#4a4a4a;
-#f9f9f9;
-#1d7484;
-#144f5a;
-#f1f1f1;
-#030e2e;
-*/
-
-// color 4 is "edemam and source code" color 3 needs to be color 4, keep color 1
-
-
+   
     let holidayIndex = 5;
-
+    //if today is within 14 days of a holiday (before or after), then set the pages colors to that holiday's color theme
     distances.forEach((_, i) => {
       if (distances[i] <= 14) {
         holidayIndex = i
         return;
       }
     });
-   
-    
+
     if (holidayIndex < 5) {
       for (var i = 0; i < 6; i++) {
         r.style.setProperty('--color' + i, colorSets[holidayIndex][i]);
       }
     }
-    
-    
   }
 
   drawPage();
 
-  // var savedRecipes = JSON.parse(localStorage.getItem('savedRecipes')) || [];
+  
   var savedModal = document.getElementById('savedRecipesModal');
   var savedBtn = document.getElementById('saved-recipes-btn');
   var closeBtn = document.getElementById('close-btn');
-  //git push -u feature/nav-bar command to push my code
+ 
   savedBtn.addEventListener('click', function () {
     savedModal.classList.remove('hidden');
     console.log("modal openede");
@@ -468,7 +439,7 @@ $(function () {
         var recipeLink = document.createElement('a');
         recipeLink.href = link;
         recipeLink.textContent = link;
-        
+
         $(".saved-recipes-list").append($("<a>").text(recipeLink).attr("href", recipeLink));
       });
     } else {
@@ -480,11 +451,5 @@ $(function () {
   closeBtn.addEventListener('click', function () {   //event listener for the close button to close the modal
     savedModal.style.display = 'none';
   })
-
-
-  function displaySaved() {
-
-  }
-
 });
 
