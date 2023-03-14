@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fetch Response Status</title>
+    <title>Feed.me</title>
     <link rel="stylesheet" href="./style.css" />
 </head>
 
@@ -27,11 +27,7 @@
         <h1>Feed.me</h1>
     </header>
     <main>
-
-        <p id="response-text"> </p>
-
         <div class="demo">
-
 
             <form action="#">
 
@@ -46,10 +42,9 @@
                     <option id="mealType" value="2">Meal Type</option>
                     <option id="dishType" value="2">Dish Type</option>
                     <option id="calories" value="1">Calorie Limit</option>
-                    <option id="time" value="1">Time Limit</option>
+                    <option id="time" value="1">Time Limit (minutes)</option>
                     <option id="excluded" value="0">Excluded Ingredients</option>
                 </select>
-
 
             </form>
 
@@ -61,7 +56,6 @@
                 <button id="search-button" type="submit">search</button>
             </form>
         </div>
-
 
         <div class="controlgroup"></div>
 
@@ -76,9 +70,8 @@
             </div>
         </div>
     </main>
+
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-
-
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/dayjs.min.js"
         integrity="sha256-iu/zLUB+QgISXBLCW/mcDi/rnf4m4uEDO0wauy76x7U=" crossorigin="anonymous"></script>
     <script src="./script.js"></script>
