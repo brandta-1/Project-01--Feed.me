@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fetch Response Status</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body class="min-100-vh flex-column">
+    <nav>
+        <button id="saved-recipes-btn">Saved Recipes</button>
+        <ul class="nav-bar">
+            <li class="nav-icon">
+                <a href="https://developer.edamam.com/edamam-recipe-api" target="_blank" class="api-link">
+                    <h1>Edemam</h1>
+                </a>
+            </li>
+            <li class="nav-github">
+                <a href="https://github.com/brandta-1/Project-01--Feed.me.git" target="_blank" class="github-link">
+                    Source Code</a>
+            </li>
+        </ul>
+    </nav>
+    <header class="p-5 text-center text-white bg-primary">
+        <h1>Feed.me</h1>
+    </header>
+    <main>
+
+        <p id="response-text"> </p>
+
+        <div class="demo">
+
+
+            <form action="#">
+
+                <label for="radius">Select Search Settings</label>
+                <select name="radius" id="test-menu" class="selectVal">
+                    <option disabled selected value> -- select an option -- </option>
+                    <option id="q" value="0">Ingredients</option>
+                    <option id="ingr" value="1">Number of Ingredients</option>
+                    <option id="diet" value="3">Diet Label</option>
+                    <option id="health" value="3">Health Label</option>
+                    <option id="cuisineType" value="2">Cuisine Type</option>
+                    <option id="mealType" value="2">Meal Type</option>
+                    <option id="dishType" value="2">Dish Type</option>
+                    <option id="calories" value="1">Calorie Limit</option>
+                    <option id="time" value="1">Time Limit</option>
+                    <option id="excluded" value="0">Excluded Ingredients</option>
+                </select>
+
+
+            </form>
+
+            <form id="settings-box">
+                <div id="settings"></div>
+                <div id="settings-display"></div>
+                <label>Limit Results:</label>
+                <input type="number" id="result-lim">
+                <button id="search-button" type="submit">search</button>
+            </form>
+        </div>
+
+
+        <div class="controlgroup"></div>
+
+        <div class="modal" id="savedRecipesModal">
+            <div class="modal-content">
+                <h2 class="modal-title">Your Saved Recipes</h2>
+                <ul class="saved-recipes-list">
+                </ul>
+                <div class="modal-footer">
+                    <button id="close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/dayjs.min.js"
+        integrity="sha256-iu/zLUB+QgISXBLCW/mcDi/rnf4m4uEDO0wauy76x7U=" crossorigin="anonymous"></script>
+    <script src="./script.js"></script>
+
+</body>
+
+</html>
