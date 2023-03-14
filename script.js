@@ -6,6 +6,8 @@ let apiURL = "";
 
 $(function () {
 
+  var r = document.querySelector(':root');
+
   $(document).on('keydown', function (e) {
     if (e.keyCode == 13) {
       return false;
@@ -30,8 +32,6 @@ $(function () {
     app_key: '7bbbe81cbe8b6c0236aed02fad02e1dc',
     app_id: 'ebc0f8c5'
   }
-
-  let test = new URLSearchParams(queryParams).toString();
 
   let dDsettings = {
     diet: [
@@ -126,6 +126,7 @@ $(function () {
       "Sweets"
     ]
   }
+
 
   $("select.selectVal").change(drawStuff);
 
@@ -228,20 +229,42 @@ $(function () {
 
     //collect all inputs that are on the page, fill their values into the query parameters
     $(".search-option").toArray().forEach((_, i) => {
-      let currInput = $(".search-option").toArray()[i];
+      let currSearchOption = $(".search-option").toArray()[i];
 
-      queryParams[currInput.id] = currInput.value;
+      if (currSearchOption.tagName === "INPUT") {
+        queryParams[currSearchOption.id] = currSearchOption.value;
+      } else {
+        console.log(currSearchOption.tagName);
+        queryParams[currSearchOption.id] = Array.from(currSearchOption.children).filter((option) => option.selected).map(option => option.value);
+      }
     })
 
     //filter null values
-    let queryParamsF = Object.fromEntries(Object.entries(queryParams).filter(([_, i]) => i != null && i != [] && i != ""));
-    console.log(queryParamsF);
-    console.log(queryParamsF.length);
-    //create URLSearchParams, make it a string for string methods
-    test = new URLSearchParams(queryParamsF).toString();
 
-    // regex used to replace parts of the string that seemed to be causing errors, this may need more work
-    test = test.replace(/%2C/g, "&");
+    let queryParamsF = Object.fromEntries(Object.entries(queryParams).filter(([_, i]) => i != null && i != [] && i != ""));
+
+    //create URLSearchParams, make it a string for string methods
+
+
+    const test = Object.keys(queryParamsF).reduce((acc, currKey) => {
+      currVal = queryParamsF[currKey];
+
+      let qParam = `${currKey}=${currVal}`;
+      if (Array.isArray(currVal)) {
+        //if it is an array, reduce it to another array of just the value and the query param of strings
+        //take that array of strings, and join them with an ampersand (see api docs)
+        qParam = currVal.reduce((a, c) => [...a, `${currKey}=${c}`], []).join('&');
+      } else if (currKey === "excluded") {
+          qParam = currVal.split(",").reduce((a, c) => [...a, `${currKey}=${c.trim()}`], []).join('&');
+          console.log(qParam);
+        }
+
+      //return the current accumulated array with a new value added onto it (can be optimized by using map instead)
+      return [...acc, qParam];
+    }, []).join('&');
+
+    console.log(queryParamsF);
+
     apiURL = "https://api.edamam.com/api/recipes/v2?type=public&" + test;
 
     //the api url is ready
@@ -275,7 +298,7 @@ $(function () {
 
 
     console.log(resultLimit)
-    for (let i = 0; i < resultLimit; i++) {
+    for (let i = 0; i < resultLimit-1; i++) {
       // creates an h2 element that text content is the same as 'label' inside the api!
       let recipesnames = $('<h2>').text(recipeArray[i].recipe.label);
       // make controlgroup append child 'recipenames'
@@ -296,19 +319,17 @@ $(function () {
       // make controlgroup append child 'calories'
       $('.controlgroup').append(calories)
       // make a button element
-      var instrutionsbutton = $('<button>')
+
       // make the instructionsbutton variable a for loop!
-      instrutionsbutton[i]
-      // make controlgroup append child 'instrutionsbutton'
-      $('.controlgroup').append(instrutionsbutton)
-      // make <a> elements
       var instrutionslink = $('<a>')
       // add attribute href to the link element which contrains the same as recipe url inside the api!
       instrutionslink.attr('href', recipeArray[i].recipe.url);
       // add instrutionslink text content!
       instrutionslink.text('Instructions');
-      // make instrutionsbutton append child 'instrutionslink'
-      $(instrutionsbutton).append(instrutionslink)
+      // make controlgroup append child 'instrutionsbutton'
+      $('.controlgroup').append(instrutionslink)
+      // make <a> elements
+      // make instrutionsbutton append child 'instrutionslink
       // make a button element
       var savebutton = $('<button>')
       // make button text content!
@@ -350,6 +371,120 @@ $(function () {
     return data;
   }
 
+  async function drawPage() {
+
+    let apiObject = await processURL("https://holidayapi.com/v1/holidays?pretty&key=ea79cfef-e556-4497-90ca-54de8fcc2e17&country=US&year=2022");
+
+    let holidays = [
+      apiObject.holidays[22].date.slice(5),
+      apiObject.holidays[77].date.slice(5),
+      apiObject.holidays[107].date.slice(5),
+      apiObject.holidays[136].date.slice(5)
+    ]
+
+    let distances = [];
+
+    console.log(holidays);
+    let today = dayjs(dayjs().format('MM-DD'));
+
+    holidays.forEach((_, i) => {
+      distances[i] = Math.abs(today.diff(holidays[i], 'day'))
+    })
+
+
+    console.log(distances)
+
+    let colorSets = [
+      ["#0F7E0B",
+        "#f9f9f9",
+        "#EF831D",
+        "#EF831D",
+        "#f1f1f1",
+        "#030e2e"],
+      ["#FF0104",
+        "#F3EEEE",
+        "#2E2EEF",
+        "#BA0204",
+        "#908B8B",
+        "#030380"],
+      ["#080500",
+        "#FC9F06",
+        "#A17F46",
+        "#5f0580",
+        "#F8E3AD",
+        "#B1AFAB"],
+      ["#056705",
+        "#888888",
+        "#FC0000",
+        "#E3E3E3",
+        "#3BA94D",
+        "#EBDE72"]
+    ]
+/*
+#4a4a4a;
+#f9f9f9;
+#1d7484;
+#144f5a;
+#f1f1f1;
+#030e2e;
+*/
+
+// color 4 is "edemam and source code" color 3 needs to be color 4, keep color 1
+
+
+    let holidayIndex = 5;
+
+    distances.forEach((_, i) => {
+      if (distances[i] <= 14) {
+        holidayIndex = i
+        return;
+      }
+    });
+   
+    
+    if (holidayIndex < 5) {
+      for (var i = 0; i < 6; i++) {
+        r.style.setProperty('--color' + i, colorSets[holidayIndex][i]);
+      }
+    }
+    
+    
+  }
+
+  drawPage();
+
+  // var savedRecipes = JSON.parse(localStorage.getItem('savedRecipes')) || [];
+  var savedModal = document.getElementById('savedRecipesModal');
+  var savedBtn = document.getElementById('saved-recipes-btn');
+  var closeBtn = document.getElementById('close-btn');
+  //git push -u feature/nav-bar command to push my code
+  savedBtn.addEventListener('click', function () {
+    savedModal.classList.remove('hidden');
+    console.log("modal openede");
+    var savedLinks = JSON.parse(localStorage.getItem('savedlink'));
+    if (savedLinks && savedLinks.length > 0) {
+      $(".saved-recipes-list").empty();
+      savedLinks.forEach(function (link) {
+        var recipeLink = document.createElement('a');
+        recipeLink.href = link;
+        recipeLink.textContent = link;
+        
+        $(".saved-recipes-list").append($("<a>").text(recipeLink).attr("href", recipeLink));
+      });
+    } else {
+      $('.modal-body').text('you have not saved any yet'); //if there is no saved links in storage show this message
+    }
+    console.log("testing");
+    document.getElementById("savedRecipesModal").style.display = "block";
+  });
+  closeBtn.addEventListener('click', function () {   //event listener for the close button to close the modal
+    savedModal.style.display = 'none';
+  })
+
+
+  function displaySaved() {
+
+  }
 
 });
 
